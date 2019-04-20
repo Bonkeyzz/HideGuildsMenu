@@ -21,7 +21,7 @@ class HideGuilds {
 
 	load() { }
 
-	setFadeEffect(targetCSS, originalWidth, targetWidth, duration) {
+	setAnimationEffect(targetCSS, originalWidth, targetWidth, duration) {
 		var rawHtml = "@keyframes guilds_slideout {";
 		rawHtml += "from { width: " + originalWidth + "; }";
 		rawHtml += "to { width: " + targetWidth + "}";
@@ -49,7 +49,7 @@ class HideGuilds {
 	}
 	start() {
 
-		this.setFadeEffect(this.getTargetClass(), this.org_width, "0.5%", "0.5s");
+		this.setAnimationEffect(this.getTargetClass(), this.org_width, "0.5%", "0.5s");
 	}
 	stop() {
 		BdApi.clearCSS('anim-sidebar');
