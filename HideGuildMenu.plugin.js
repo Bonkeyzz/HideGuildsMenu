@@ -1,59 +1,65 @@
-//META{"name":"HideGuilds"}*//
-/*globals BdApi*/
+// //META{"name":"HideGuilds"}*//
+// /*globals BdApi*/
 
 
 class HideGuilds {
 
 	getName() { return "Hide Guilds"; }
 	getDescription() { return "Hides the servers until you hover over to the left side."; }
-	getVersion() { return "0.0.4"; }
+	getVersion() { return "0.0.5"; }
 	getAuthor() { return "Bonkeyzz"; }
 
-	getTargetClass() { return ".wrapper-1Rf91z"; }
 
 	constructor() {
-		this.targetCSS = $(this.getTargetClass());
-		this.org_width = this.targetCSS.css("width");
+		this.guildBarClass = ".wrapper-3NnKdC";
+		this.scrollerBase = document.querySelector(this.guildBarClass)
+		this.initialWidth = this.scrollerBase.width() + "px";
 
-		console.log("%c[HideGuilds]%c Original Width: " + this.org_width, 'color: #00FFFF; font-weight: bold;', '');
-	}
+		this.targetWidth = "0.5%";
+		this.animationDuration = "0.5s";
+		this.guildBarAnimationCss = "";
 
-
-	load() { }
-
-	setAnimationEffect(targetCSS, originalWidth, targetWidth, duration) {
-		var rawHtml = "@keyframes guilds_slideout {";
-		rawHtml += "from { width: " + originalWidth + "; }";
-		rawHtml += "to { width: " + targetWidth + "}";
-		rawHtml += "}";
-
-		rawHtml += "@keyframes guilds_slidein {";
-		rawHtml += "from { width: " + targetWidth + "}";
-		rawHtml += "to { width: " + originalWidth + " }";
-		rawHtml += "}";
-
-		rawHtml += targetCSS + "{";
-		rawHtml += "width: " + originalWidth + ";";
-		rawHtml += "animation-name: guilds_slidein;";
-		rawHtml += "animation-duration: " + duration + ";";
-		rawHtml += "}";
-
-		rawHtml += targetCSS + ":not(:hover){";
-		rawHtml += "width: " + targetWidth + ";";
-		rawHtml += "animation-name: guilds_slideout;";
-		rawHtml += "animation-duration: " + duration + ";";
-		rawHtml += "}";
-
-		BdApi.injectCSS('anim-sidebar', rawHtml);
+		this.initialized = false;
 		
+		console.log("%c[HideGuilds]%c Original Width: " + this.initialWidth, 'color: #00FFFF; font-weight: bold;', '');
 	}
-	start() {
 
-		this.setAnimationEffect(this.getTargetClass(), this.org_width, "0.5%", "0.5s");
+    load() { 
+		this.guildBarAnimationCss = 
+		`
+		@keyframes guilds_slideout {
+			from { width: ${this.initialWidth}; }
+			to { width: ${this.targetWidth}; }
+		}
+
+		@keyframes guilds_slidein {
+			from { width: ${this.targetWidth}; }
+			to { width: ${this.initialWidth}; }
+		}
+
+		${this.guildBarClass} {
+			width: ${this.initialWidth}px;
+			animation-name: guilds_slidein;
+			animation-duration: ${this.animationDuration};
+		}
+
+		${this.guildBarClass}:not(:hover) {
+			width: ${this.targetWidth};
+			animation-name: guilds_slideout;
+			animation-duration: ${this.animationDuration};
+		}
+		`; 
+
+	}
+    
+	start() {
+		BdApi.injectCSS('guildBarAnimation', this.guildBarAnimationCss);
+		this.initialized = true;
+		console.log("%c[HideGuilds]%c Started!", 'color: #00FFFF; font-weight: bold;', '');
 	}
 	stop() {
-		BdApi.clearCSS('anim-sidebar');
+		BdApi.clearCSS('guildBarAnimation');
+		this.initialized = false;
+		console.log("%c[HideGuilds]%c Stopped!", 'color: #00FFFF; font-weight: bold;', '');
 	}
-
-	observer(changes) { }
 }
